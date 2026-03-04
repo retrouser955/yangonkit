@@ -1,4 +1,26 @@
 {
   "name": "yangonkit",
-  "packageManager": "yarn@4.6.0"
+  "main": "dist/index.js",
+  "description": "YangonKit is a compiler plugin for CommandKit that introduce a whole new template to CommandKit.",
+  "packageManager": "yarn@4.6.0",
+  "scripts": {
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "commandkit": "^1.2.0",
+    "discord.js": "^14.25.1",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "ts-morph": "^27.0.2"
+  },
+  "author": "retro_ig",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  }
 }
