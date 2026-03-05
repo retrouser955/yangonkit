@@ -71,10 +71,8 @@ export class YangonKit extends CompilerPlugin {
         let result: string | undefined = undefined;
 
         if(name === "SlashCommand") {
-            result = processSlashCommand(source, neighbor, commandMacro);
+            result = processSlashCommand(source, neighbor, commandMacro, label);
         }
-
-        label.remove();
 
         Logger.info(`[YANGON KIT]: Finished code for: ${id}`);
 

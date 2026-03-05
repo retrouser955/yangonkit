@@ -1,9 +1,9 @@
-import type { CallExpression, FunctionDeclaration, SourceFile, ts } from "ts-morph";
+import type { CallExpression, FunctionDeclaration, LabeledStatement, SourceFile, ts } from "ts-morph";
 import { SyntaxKind, VariableDeclarationKind } from "ts-morph";
 import { generateCurrentUnix } from "../Utils";
 import { OPTION_TYPES_MAP } from "../../Constants";
 
-export function processSlashCommand(source: SourceFile, neighbor: FunctionDeclaration, commandMacro: CallExpression<ts.CallExpression>) {
+export function processSlashCommand(source: SourceFile, neighbor: FunctionDeclaration, commandMacro: CallExpression<ts.CallExpression>, label: LabeledStatement) {
     neighbor.toggleModifier("default", false);
 
     const paramName = `__kit_tmp_ctx_${generateCurrentUnix()}`;
@@ -128,6 +128,8 @@ export function processSlashCommand(source: SourceFile, neighbor: FunctionDeclar
                 .write("\n]")
         }
     })
+
+    label.remove();
 
     return source.getText();
 }

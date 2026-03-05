@@ -1,0 +1,8 @@
+LEGAL.md
+.yarn
+.yarnrc.yml
+src/
+tsconfig.json
+tsup.config.ts
+.github/
+.editorconfig
