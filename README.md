@@ -128,6 +128,29 @@ export default function add({ interaction }: ChatInputCommandContext) {
 }
 ```
 
+**Auto complete:**
+
+when using `ApplicationCommandOptionType.String` on **$param**, we can integrate autocomplete directly inside the declaration.
+
+```ts
+$: SlashCommand("Get information about pets")
+export default async function pets({ interaction }: ChatInputCommandContext) {
+    const pet = $param(ApplicationCommandOptionType.String, {
+        description: "What pet to say",
+        required: true,
+        autocomplete: async (autocompleteContext) => {
+            // handle your auto complete here
+            return []; // use the return statement to let yangonkit handle sending to the Discord API or manually respond via autocompleteContext.interaction.respond()
+        }
+    })
+
+    // do something with `pet`
+}
+```
+
+> [!IMPORTANT]  
+> Under NO circumstances, you can use variables that you have declared outside the `autocomplete` scope is usable. The autocomplete handler get's isolated and runtime and uses its own scope.
+
 ## Option Types
 
 YangonKit supports all Discord.js `ApplicationCommandOptionType` options:

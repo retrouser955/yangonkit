@@ -1,7 +1,7 @@
 {
   "name": "yangonkit",
   "main": "dist/index.js",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "YangonKit is a compiler plugin for CommandKit that introduce a whole new template to CommandKit.",
   "packageManager": "yarn@4.6.0",
   "scripts": {

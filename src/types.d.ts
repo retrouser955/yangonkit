@@ -1,4 +1,4 @@
-import { CommandData } from "commandkit";
+import { AutocompleteCommandContext, CommandData } from "commandkit";
 import {
     ApplicationCommandOptionType,
     CommandInteractionOptionResolver,
@@ -27,7 +27,12 @@ type KitOptionsParsed<T extends ApplicationCommandOptionType> = Omit<Extract<Kit
     type: T
 }>, "type" | "name">
 
+type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
+type MaybePromise<T> = T | Promise<T>;
+
 type KitCommandData = Omit<CommandData, "description" | "options" | "name">;
+type KitAutoCompleteReturnType = { name: string, value: string }[];
+type KitAutoCompleteHandler = (query: AutocompleteCommandContext) => MaybePromise<KitAutoCompleteReturnType | void>;
 
 declare global {
     function $param<
@@ -35,7 +40,8 @@ declare global {
         O extends KitOptionsParsed<T>
     >(
         type: T,
-        options: O
+        options: T extends ApplicationCommandOptionType.String ?
+            Overwrite<O, { autocomplete?: KitAutoCompleteHandler }> : O
     ): O extends { required: true } ?
         ParamReturnType[T] :
         T extends ApplicationCommandOptionType.Subcommand ?
