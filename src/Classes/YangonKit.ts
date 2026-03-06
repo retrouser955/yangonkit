@@ -39,10 +39,9 @@ export class YangonKit extends CompilerPlugin {
     async transform(params: PluginTransformParameters): Promise<MaybeFalsey<TransformedResult>> {
         const { code, id } = params;
 
-        Logger.info(`[YANGON KIT]: Generating code for: ${id}`);
-
         // no transformation on non command files
         if (!id.includes("/commands/")) return;
+        Logger.info(`[YANGON KIT]: Generating code for: ${id}`);
 
         const project = new Project({
             skipAddingFilesFromTsConfig: true,
