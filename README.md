@@ -149,7 +149,7 @@ export default async function pets({ interaction }: ChatInputCommandContext) {
 ```
 
 > [!IMPORTANT]  
-> Under NO circumstances, you can use variables that you have declared outside the `autocomplete` scope is usable. The autocomplete handler get's isolated and runtime and uses its own scope.
+> Under NO circumstances, the variables that you have declared outside the `autocomplete` scope is usable. The autocomplete handler get's isolated at runtime and uses its own scope.
 
 ## Option Types
 
