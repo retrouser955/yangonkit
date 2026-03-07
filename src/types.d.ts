@@ -37,18 +37,24 @@ type KitAutoCompleteHandler = (query: AutocompleteCommandContext) => MaybePromis
 declare global {
     function $param<
         T extends ApplicationCommandOptionType,
-        O extends KitOptionsParsed<T>
+        O extends KitOptionsParsed<T> & { required: false }
     >(
         type: T,
         options: T extends ApplicationCommandOptionType.String ?
             Overwrite<O, { autocomplete?: KitAutoCompleteHandler }> : O
-    ): O extends { required: true } ?
-        ParamReturnType[T] :
-        T extends ApplicationCommandOptionType.Subcommand ?
+    ): T extends ApplicationCommandOptionType.Subcommand ?
         ParamReturnType[T] :
         T extends ApplicationCommandOptionType.SubcommandGroup ?
         ParamReturnType[T] :
         ParamReturnType[T] | undefined;
+    function $param<
+        T extends ApplicationCommandOptionType,
+        O extends KitOptionsParsed<T> & { required: true }
+    >(
+        type: T,
+        options: T extends ApplicationCommandOptionType.String ?
+            Overwrite<O, { autocomplete?: KitAutoCompleteHandler }> : O
+    ): ParamReturnType[T];
 
     function SlashCommand(description: string, options?: KitCommandData): void;
 }
