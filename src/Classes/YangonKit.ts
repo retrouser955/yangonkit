@@ -40,7 +40,8 @@ export class YangonKit extends CompilerPlugin {
         const { code, id } = params;
 
         // no transformation on non command files
-        if (!id.includes("/commands/")) return;
+        const pathSegs = id.split(path.sep);
+        if (!pathSegs.includes("commands")) return;
         Logger.info(`[YANGON KIT]: Generating code for: ${id}`);
 
         const project = new Project({
@@ -52,8 +53,14 @@ export class YangonKit extends CompilerPlugin {
             overwrite: true
         });
 
-        const label = source.getChildrenOfKind(SyntaxKind.LabeledStatement)[0];
+        // enforce 1 command per file
+        const labels = source.getChildrenOfKind(SyntaxKind.LabeledStatement);
+        if(labels.length > 1) throw new Error("Multiple Labels found. Please ensure there are only 1 $: SlashCommand per file.");
 
+        const label = labels.at(0)
+
+        // if there are no labels, just ignore the file.
+        if(!label) return;
         if(label.getLabel().getText() !== "$") return;
 
         const neighbor = label.getNextSibling((node) => node.isKind(SyntaxKind.FunctionDeclaration));
@@ -64,7 +71,7 @@ export class YangonKit extends CompilerPlugin {
 
         const name = commandMacro.getExpression().getText();
 
-        // TODO: Add support for message commands
+        // TODO: Add support for sub commands
         if (!['SlashCommand'].includes(name)) return;
 
         let result: string | undefined = undefined;

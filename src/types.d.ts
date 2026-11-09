@@ -25,7 +25,7 @@ type KitOptions = ExtractArrayType<RESTPostAPIApplicationCommandsJSONBody['optio
 
 type KitOptionsParsed<T extends ApplicationCommandOptionType> = Omit<Extract<KitOptions, {
     type: T
-}>, "type" | "name">
+}>, "type" | "name" | "required">
 
 type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 type MaybePromise<T> = T | Promise<T>;
@@ -34,27 +34,26 @@ type KitCommandData = Omit<CommandData, "description" | "options" | "name">;
 type KitAutoCompleteReturnType = { name: string, value: string }[];
 type KitAutoCompleteHandler = (query: AutocompleteCommandContext) => MaybePromise<KitAutoCompleteReturnType | void>;
 
+type ParamOptions<T extends ApplicationCommandOptionType> =
+    KitOptionsParsed<T> &
+    (T extends ApplicationCommandOptionType.String
+        ? { autocomplete?: KitAutoCompleteHandler }
+        : {});
+
 declare global {
     function $param<
         T extends ApplicationCommandOptionType,
-        O extends KitOptionsParsed<T> & { required: false }
+        R extends boolean = false
     >(
         type: T,
-        options: T extends ApplicationCommandOptionType.String ?
-            Overwrite<O, { autocomplete?: KitAutoCompleteHandler }> : O
+        options: ParamOptions<T> & { required?: R }
     ): T extends ApplicationCommandOptionType.Subcommand ?
         ParamReturnType[T] :
         T extends ApplicationCommandOptionType.SubcommandGroup ?
-        ParamReturnType[T] :
-        ParamReturnType[T] | undefined;
-    function $param<
-        T extends ApplicationCommandOptionType,
-        O extends KitOptionsParsed<T> & { required: true }
-    >(
-        type: T,
-        options: T extends ApplicationCommandOptionType.String ?
-            Overwrite<O, { autocomplete?: KitAutoCompleteHandler }> : O
-    ): ParamReturnType[T];
+        ParamReturnType[T] : 
+        R extends true ?
+            ParamReturnType[T] :
+            ParamReturnType[T] | undefined;
 
     function SlashCommand(description: string, options?: KitCommandData): void;
 }
