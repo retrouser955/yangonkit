@@ -2,7 +2,7 @@ import { AutocompleteCommandContext, CommandData } from "commandkit";
 import {
     ApplicationCommandOptionType,
     CommandInteractionOptionResolver,
-    RESTPostAPIApplicationCommandsJSONBody,
+    RESTPostAPIChatInputApplicationCommandsJSONBody,
 } from "discord.js";
 
 type ParamReturnType = {
@@ -21,7 +21,7 @@ type ParamReturnType = {
 
 type ExtractArrayType<T> = T extends Array<infer R> ? R : never;
 
-type KitOptions = ExtractArrayType<RESTPostAPIApplicationCommandsJSONBody['options']>
+type KitOptions = ExtractArrayType<RESTPostAPIChatInputApplicationCommandsJSONBody['options']>
 
 type KitOptionsParsed<T extends ApplicationCommandOptionType> = Omit<Extract<KitOptions, {
     type: T

@@ -1492,7 +1492,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commandkit@npm:^1.2.0":
+"commandkit@npm:^1.2.6":
   version: 1.2.6
   resolution: "commandkit@npm:1.2.6"
   dependencies:
@@ -1588,7 +1588,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord.js@npm:^14.25.1":
+"discord.js@npm:^14.28.1":
   version: 14.28.1
   resolution: "discord.js@npm:14.28.1"
   dependencies:
@@ -3193,8 +3193,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "yangonkit@workspace:."
   dependencies:
-    commandkit: "npm:^1.2.0"
-    discord.js: "npm:^14.25.1"
+    commandkit: "npm:^1.2.6"
+    discord.js: "npm:^14.28.1"
     ts-morph: "npm:^27.0.2"
     tsup: "npm:^8.5.1"
     typescript: "npm:^5.9.3"
