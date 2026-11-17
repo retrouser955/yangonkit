@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { YangonKit } from "../src/index";
 import type { TransformedResult } from "commandkit";
+import path from "node:path";
 
 const yangonKit = new YangonKit({});
 
@@ -15,6 +16,19 @@ import type { ChatInputCommandContext } from "commandkit";
 $: SlashCommand("Replies with a pong!")
 export default function ping({ interaction }: ChatInputCommandContext) {
     interaction.reply("pong!");
+}
+`.trim();
+
+const COMPILER_TEST_CODE_SNAKE_CONVERSION = `
+import type { ChatInputCommandContext } from "commandkit";
+
+$: SlashCommand("Play a media source")
+export default function playMedia({ interaction }: ChatInputCommandContext) {
+    const mediaSource = $param(ApplicationCommandOptionType.String, {
+        description: "source",
+        required: true
+    });
+    interaction.reply("Playing media");
 }
 `.trim();
 
@@ -55,7 +69,7 @@ describe("YangonKit.transform()", () => {
     it("should transform a SlashCommand macro", async () => {
         const result = await yangonKit.transform({
             code: COMPILER_TEST_CODE_NO_JSX,
-            id: "/commands/ping.ts"
+            id: path.join("commands", "ping.ts")
         });
 
         expect(result).toBeDefined();
@@ -67,7 +81,7 @@ describe("YangonKit.transform()", () => {
     it("should perserve JSX and transform", async () => {
         const result = await yangonKit.transform({
             code: COMPILER_TEST_CODE_JSX,
-            id: "/commands/jsxtest.tsx"
+            id: path.join("commands", "jsxtest.tsx")
         });
 
         expect(result).toBeDefined();
@@ -79,7 +93,7 @@ describe("YangonKit.transform()", () => {
     it("should parse the option correctly", async () => {
         const result = await yangonKit.transform({
             code: COMPILER_TEST_CODE_NO_JSX_OPTIONS,
-            id: "/commands/options.ts"
+            id: path.join("commands", "options.ts")
         });
 
         expect(result).toBeDefined();
@@ -92,5 +106,27 @@ describe("YangonKit.transform()", () => {
         // options test
         expect((result as TransformedResult).code).toContain("name: \"firstNumber\"");
         expect((result as TransformedResult).code).toContain("description: \"First number\"");
+    });
+
+    it("should convert the options to snake_case", async () => {
+        const yangonSnake = new YangonKit({
+            convertToSnake: true
+        });
+
+        // @ts-expect-error mock compiler plugin for yangonkit
+        await yangonSnake.activate({
+            registerTemplate() { }
+        })
+
+        const result = await yangonSnake.transform({
+            code: COMPILER_TEST_CODE_SNAKE_CONVERSION,
+            id: path.join("commands", "playmedia.ts")
+        });
+
+        expect(result).toBeDefined();
+        expect(result).not.toBe(false);
+
+        expect((result as TransformedResult).code).toContain("play_media");
+        expect((result as TransformedResult).code).toContain("media_source");
     })
 });

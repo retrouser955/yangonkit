@@ -68,7 +68,11 @@ export class YangonKit extends CompilerPlugin<YangonKitOptions> {
         const label = labels.at(0)
 
         // if there are no labels, just ignore the file.
-        if(!label) return;
+        if(!label) {
+            Logger.info("No labels found for file.");
+            return;
+        }
+
         if(label.getLabel().getText() !== "$") return;
 
         const neighbor = label.getNextSibling((node) => node.isKind(SyntaxKind.FunctionDeclaration));
