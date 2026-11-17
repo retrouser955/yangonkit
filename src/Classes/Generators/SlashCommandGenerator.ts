@@ -1,10 +1,11 @@
 import type { CallExpression, FunctionDeclaration, LabeledStatement, SourceFile, ts } from "ts-morph";
 import { SyntaxKind, VariableDeclarationKind } from "ts-morph";
-import { generateCurrentUnix } from "../Utils";
+import { camelToSnake, generateCurrentUnix } from "../Utils";
 import { OPTION_TYPES_MAP } from "../../Constants";
 import { Logger } from "commandkit";
+import { YangonKitOptions } from "../YangonKit";
 
-export function processSlashCommand(source: SourceFile, neighbor: FunctionDeclaration, commandMacro: CallExpression<ts.CallExpression>, label: LabeledStatement) {
+export function processSlashCommand(source: SourceFile, neighbor: FunctionDeclaration, commandMacro: CallExpression<ts.CallExpression>, label: LabeledStatement, kitOptions: YangonKitOptions) {
     neighbor.toggleModifier("default", false);
 
     const paramName = `__kit_tmp_ctx_${generateCurrentUnix()}`;
@@ -14,7 +15,7 @@ export function processSlashCommand(source: SourceFile, neighbor: FunctionDeclar
         type: "import('commandkit').ChatInputCommandContext"
     })
 
-    const commandName = structuredClone(neighbor.getName());
+    let commandName = structuredClone(neighbor.getName());
 
     neighbor.rename("chatInput");
 
@@ -37,6 +38,7 @@ export function processSlashCommand(source: SourceFile, neighbor: FunctionDeclar
     neighbor.setBodyText(replacedText);
 
     if (!commandName) throw new Error("Command name not found"); // function is anon
+    if(kitOptions.convertToSnake) commandName = camelToSnake(commandName);
 
     const paramMacros = neighbor
         .getDescendantsOfKind(SyntaxKind.CallExpression)
@@ -46,7 +48,8 @@ export function processSlashCommand(source: SourceFile, neighbor: FunctionDeclar
     const autoCompleteHandlers: string[] = [];
 
     for (const param of paramMacros) {
-        const optionName = param.getParentIfKindOrThrow(SyntaxKind.VariableDeclaration).getName();
+        let optionName = param.getParentIfKindOrThrow(SyntaxKind.VariableDeclaration).getName();
+        if(kitOptions.convertToSnake) optionName = camelToSnake(optionName);
         const optionNameVar = `__kit_tmp_opt_${optionName}_${generateCurrentUnix()}`;
 
         const args = param.getArguments();

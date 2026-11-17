@@ -4,7 +4,15 @@ import { writeFile } from "node:fs/promises"
 import path from "node:path";
 import { processSlashCommand } from "./Generators";
 
-export class YangonKit extends CompilerPlugin {
+export interface YangonKitOptions {
+    /**
+     * Convert Discord variable names to snake_case
+     * Example: function playMedia -> /play_media
+     */
+    convertToSnake?: boolean
+}
+
+export class YangonKit extends CompilerPlugin<YangonKitOptions> {
     public readonly name = "com.retrouser955.commadkit.yangonkit";
 
     async activate(ctx: CompilerPluginRuntime): Promise<void> {
@@ -77,7 +85,7 @@ export class YangonKit extends CompilerPlugin {
         let result: string | undefined = undefined;
 
         if(name === "SlashCommand") {
-            result = processSlashCommand(source, neighbor, commandMacro, label);
+            result = processSlashCommand(source, neighbor, commandMacro, label, this.options);
         }
 
         Logger.info(`[YANGON KIT]: Finished code for: ${id}`);
